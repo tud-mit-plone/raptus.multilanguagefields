@@ -21,6 +21,7 @@ from Products.Archetypes.Layer import DefaultLayerContainer
 
 from raptus.multilanguagefields import multilanguagefieldsMessageFactory as _
 from raptus.multilanguagefields.interfaces import IMultilanguageField
+from zope.globalrequest import getRequest
 
 try:
     # Plone < 4.3
@@ -42,7 +43,25 @@ class MultilanguageFieldMixin(Base):
     implements(IMultilanguageField)
 
     security = ClassSecurityInfo()
-    _v_lang = None
+    _v_lang_fallback = None
+
+    def _set_v_lang(self, lang):
+        request = getRequest()
+        self._v_lang_fallback = lang
+        if request:
+            vlang_store = getattr(request, 'vlang_store', dict())
+            vlang_store[id(self)] = lang
+            setattr(request, 'vlang_store', vlang_store)
+
+    def _get_v_lang(self):
+        request = getRequest()
+        if request:
+            vlang_store = getattr(request, 'vlang_store', dict())
+            return vlang_store.get(id(self), None)
+        return self._v_lang_fallback
+
+    _v_lang = property(fget=_get_v_lang,
+                       fset=_set_v_lang)
 
     # making required fields not required if language fallback is enabled
     # and the current language is not the default one
