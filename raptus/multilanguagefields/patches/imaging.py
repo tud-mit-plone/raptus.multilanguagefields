@@ -48,9 +48,17 @@ try:
 
     def scale(self, fieldname=None, scale=None, **parameters):
         field = self.context.getField(fieldname)
+
         if IMultilanguageField.providedBy(field):
-            fieldname = '%s___%s___' % (fieldname, field._v_lang or field._getCurrentLanguage(getSite()))
-        return self.__old_scale(fieldname, scale, **parameters)
+            if not '___' in fieldname:  # no language explicitly wished. So unset language preference.
+                field.resetLanguage()
+            fieldname = '%s___%s___' % (fieldname, field._v_lang or field._getCurrentLanguage(self.context))
+
+        image = self.__old_scale(fieldname, scale, **parameters)
+
+        if IMultilanguageField.providedBy(field):
+            field.resetLanguage()
+        return image
     from plone.app.imaging.scaling import ImageScaling
     ImageScaling.__old_scale = ImageScaling.scale
     ImageScaling.scale = scale
