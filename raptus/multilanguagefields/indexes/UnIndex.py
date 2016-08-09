@@ -19,15 +19,18 @@ from Products.PluginIndexes.common.UnIndex import UnIndex, _marker
 class MultilanguageUnIndex(UnIndex):
     """Multilanguage aware forward and reverse index.
     """
-    
+
     _v_lang = None
     _d_length = PersistentDict()
     _d_index = PersistentDict()
     _d_unindex = PersistentDict()
-        
+
     def _getCurrentLanguage(self):
-        return getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
-    
+        try:
+            return getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
+        except AttributeError:
+            return 'en'
+
     def _get_lang_length(self, lang):
         if not self._d_length.has_key(lang):
             self._d_length[lang] = BTrees.Length.Length()
@@ -53,7 +56,7 @@ class MultilanguageUnIndex(UnIndex):
     _length = property(fget=_get_length,
                        fset=_set_length,
                        fdel=_del_length)
-    
+
     def _get_lang_index(self, lang):
         if not self._d_index.has_key(lang):
             self._d_index[lang] = OOBTree()
@@ -78,7 +81,7 @@ class MultilanguageUnIndex(UnIndex):
     _index = property(fget=_get_index,
                       fset=_set_index,
                       fdel=_del_index)
-    
+
     def _get_lang_unindex(self, lang):
         if not self._d_unindex.has_key(lang):
             self._d_unindex[lang] = IOBTree()
@@ -103,7 +106,7 @@ class MultilanguageUnIndex(UnIndex):
     _unindex = property(fget=_get_unindex,
                         fset=_set_unindex,
                         fdel=_del_unindex)
-        
+
     def clear(self):
         self._v_lang = None
         self._d_length = PersistentDict()
@@ -136,7 +139,7 @@ class MultilanguageUnIndex(UnIndex):
                 UnIndex.unindex_object(self, documentId)
         finally:
             self._v_lang = None
-    
+
     def _get_object_datum(self, obj, attr):
         # self.id is the name of the index, which is also the name of the
         # attribute we're interested in.  If the attribute is callable,

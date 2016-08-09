@@ -24,7 +24,10 @@ class MultilanguageZCTextIndex(ZCTextIndex):
     _v_lang = None
 
     def _getCurrentLanguage(self):
-        return getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
+        try:
+            return getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
+        except AttributeError:
+            return 'en'
 
     @property
     def languages(self):
@@ -32,7 +35,7 @@ class MultilanguageZCTextIndex(ZCTextIndex):
         if ltool is None:
             return []
         return ltool.getSupportedLanguages()
-    
+
     def _get_lang_index(self, lang):
         if not hasattr(self, '_index_%s' % lang):
             setattr(self, '_index_%s' % lang, self._index_factory(aq_base(self.getLexicon())))
@@ -79,7 +82,7 @@ class MultilanguageZCTextIndex(ZCTextIndex):
         try: fields = self._indexed_attrs
         except: fields  = [ self._fieldname ]
         res = 0
-        
+
         for lang in self.languages:
             all_texts = []
             for attr in fields:
@@ -96,7 +99,7 @@ class MultilanguageZCTextIndex(ZCTextIndex):
                         all_texts.extend(text)
                     else:
                         all_texts.append(text)
-    
+
             # Check that we're sending only strings
             all_texts = filter(lambda text: isinstance(text, basestring), \
                                all_texts)
