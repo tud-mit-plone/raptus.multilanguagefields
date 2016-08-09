@@ -71,13 +71,6 @@ class MultilanguageFieldMixin(Base):
     def _set_required(self, value):
         self._required = value
     def _get_required(self):
-        context = getSite()
-        if self.haveLanguageFallback(context):
-            current = self._v_lang
-            if current is None:
-                current = self._getCurrentLanguage(context)
-            default = self.getDefaultLang(context)
-            return default == current and getattr(self, '_required', False)
         return getattr(self, '_required', False)
     required = property(fget=_get_required,
                         fset=_set_required)
