@@ -46,7 +46,7 @@ try:
     ImageTraverser.publishTraverse = publishTraverse
     LOG.info("plone.app.imaging.traverse.ImageTraverser.publishTraverse patched")
 
-    def scale(self, fieldname=None, scale=None, **parameters):
+    def scale(self, fieldname=None, scale=None, height=None, width=None, **parameters):
         field = self.context.getField(fieldname)
 
         if IMultilanguageField.providedBy(field):
@@ -54,7 +54,7 @@ try:
                 field.resetLanguage()
             fieldname = '%s___%s___' % (fieldname, field._v_lang or field._getCurrentLanguage(self.context))
 
-        image = self.__old_scale(fieldname, scale, **parameters)
+        image = self.__old_scale(fieldname, scale, height, width, **parameters)
 
         if IMultilanguageField.providedBy(field):
             field.resetLanguage()
