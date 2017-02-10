@@ -15,6 +15,13 @@ except ImportError:
 from Products.PluginIndexes.common import safe_callable
 from Products.CMFCore.utils import getToolByName
 
+try:
+    from plone.protect.utils import safeWrite
+except ImportError:
+    def safeWrite(obj, request=None):
+        pass
+
+
 class MultilanguageZCTextIndex(ZCTextIndex):
     """Multilanguage Persistent text index.
     """
@@ -39,6 +46,8 @@ class MultilanguageZCTextIndex(ZCTextIndex):
     def _get_lang_index(self, lang):
         if not hasattr(self, '_index_%s' % lang):
             setattr(self, '_index_%s' % lang, self._index_factory(aq_base(self.getLexicon())))
+            safeWrite(self)
+            safeWrite(self, getattr(self, '_index_%s' % lang))
         return getattr(self, '_index_%s' % lang)
 
     def _set_index(self, value):
@@ -74,6 +83,8 @@ class MultilanguageZCTextIndex(ZCTextIndex):
                 raise TypeError('Object "%s" is not a ZCTextIndex Lexicon'
                                 % repr(lexicon))
             self._v_lexicon = lexicon
+            safeWrite(self)
+            safeWrite(lexicon)
             return lexicon
 
     ## Pluggable Index APIs ##

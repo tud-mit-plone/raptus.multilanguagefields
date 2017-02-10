@@ -16,6 +16,13 @@ from Products.CMFCore.utils import getToolByName
 from Products.PluginIndexes.common import safe_callable
 from Products.PluginIndexes.common.UnIndex import UnIndex, _marker
 
+try:
+    from plone.protect.utils import safeWrite
+except ImportError:
+    def safeWrite(obj, request=None):
+        pass
+
+
 class MultilanguageUnIndex(UnIndex):
     """Multilanguage aware forward and reverse index.
     """
@@ -60,6 +67,9 @@ class MultilanguageUnIndex(UnIndex):
     def _get_lang_index(self, lang):
         if not self._d_index.has_key(lang):
             self._d_index[lang] = OOBTree()
+            safeWrite(self)
+            safeWrite(self._d_index)
+            safeWrite(self._d_index[lang])
         return self._d_index[lang]
 
     def _set_index(self, value):
@@ -85,6 +95,9 @@ class MultilanguageUnIndex(UnIndex):
     def _get_lang_unindex(self, lang):
         if not self._d_unindex.has_key(lang):
             self._d_unindex[lang] = IOBTree()
+            safeWrite(self)
+            safeWrite(self._d_unindex)
+            safeWrite(self._d_unindex[lang])
         return self._d_unindex[lang]
 
     def _set_unindex(self, value):
