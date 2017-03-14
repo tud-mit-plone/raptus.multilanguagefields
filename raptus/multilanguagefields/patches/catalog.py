@@ -25,7 +25,9 @@ except:
 # CatalogBrain monkey patch
 def __new_init__(self, data):
     ndata = []
-    lang = getToolByName(getSite(), 'portal_languages').getPreferredLanguage()
+    portal_languages = getToolByName(getSite(), 'portal_languages')
+    lang = portal_languages.getPreferredLanguage()
+    default_lang = portal_languages.getDefaultLanguage() if portal_languages.allow_content_language_fallback else 'en'
     try:
         encoding = getToolByName(self, "portal_properties").site_properties.default_charset
     except AttributeError:
@@ -34,7 +36,10 @@ def __new_init__(self, data):
         try:
             value = json.loads(v)
             value = value['___multilanguage___']
-            v = value.get(lang, '')
+            if portal_languages.allow_content_language_fallback:
+                v = value.get(lang, value.get(default_lang, ''))
+            else:
+                v = value.get(lang, '')
             if isinstance(v, basestring):
                 v = v.encode(encoding)
         except:
