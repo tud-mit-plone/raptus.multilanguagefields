@@ -4,8 +4,12 @@ Changelog
 1.1b12 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Required fields are not dependent from language fallback anymore [sebasgo]
+- Reset language after scaling images [pgrunewald]
+- Make indices resilient [sebasgo]
+- Fix Image Bobo traversing for fullscreen view [sebasgo]
+- Allow language fallback for brains [pgrunewald]
+- Fix lazy initialization with respect to plone.protect [sebasgo]
 
 1.1b11 (2017-01-09)
 -------------------
@@ -16,7 +20,7 @@ Changelog
 1.1b10 (2014-12-05)
 -------------------
 
-* Renamed protected TAL keyword 'translate' to 'multilanguage'
+* Renamed protected TAL keyword 'translate' to 'multilanguage' [pgrunewald]
 
 
 1.1b9 (2014-06-24)
